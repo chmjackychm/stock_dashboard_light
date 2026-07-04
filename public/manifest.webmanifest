@@ -1,0 +1,19 @@
+{
+  "name": "轻量行情",
+  "short_name": "轻量行情",
+  "description": "轻量股票与 ETF 技术指标 PWA",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f4f8",
+  "theme_color": "#f3f4f8",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
