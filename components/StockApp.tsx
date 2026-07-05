@@ -1,12 +1,13 @@
 "use client";
 
-import { Search, Trash2, Plus, Eye } from "lucide-react";
+import { Search, Trash2, Plus, Eye, LayoutGrid, List } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { BottomNav, DetailPage, Metric, SettingsPage } from "@/components/AppPieces";
 import { colorByChange, formatPrice, formatSigned } from "@/lib/format";
 import type { DetailResponse, SearchResult, WatchItem } from "@/lib/types";
 
 const STORAGE_KEY = "light-stock-watchlist-v1";
+const VIEW_STORAGE_KEY = "light-stock-watch-view-v1";
 const DEFAULT_WATCHLIST: WatchItem[] = [
   { secid: "sh513310", name: "中韩半导体ETF华泰柏瑞", code: "513310" },
   { secid: "sz000021", name: "深科技", code: "000021" },
@@ -15,6 +16,7 @@ const DEFAULT_WATCHLIST: WatchItem[] = [
 
 type Tab = "watch" | "search" | "settings";
 type DetailSource = "watch" | "search";
+type WatchView = "card" | "list";
 type Summary = WatchItem & {
   detail?: DetailResponse;
   error?: string;
@@ -49,6 +51,8 @@ export default function StockApp() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [storageReady, setStorageReady] = useState(false);
+  const [watchView, setWatchView] = useState<WatchView>("card");
+  const [viewStorageReady, setViewStorageReady] = useState(false);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -74,10 +78,27 @@ export default function StockApp() {
   }, []);
 
   useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(VIEW_STORAGE_KEY);
+      if (stored === "card" || stored === "list") {
+        setWatchView(stored);
+      }
+    } finally {
+      setViewStorageReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (storageReady) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlist));
     }
   }, [storageReady, watchlist]);
+
+  useEffect(() => {
+    if (viewStorageReady) {
+      window.localStorage.setItem(VIEW_STORAGE_KEY, watchView);
+    }
+  }, [viewStorageReady, watchView]);
 
   const known = useMemo(() => new Set(watchlist.map((item) => item.secid)), [watchlist]);
 
@@ -178,6 +199,8 @@ export default function StockApp() {
         ) : tab === "watch" ? (
           <WatchPage
             summaries={summaries}
+            view={watchView}
+            onViewChange={setWatchView}
             onSearch={() => setTab("search")}
             onOpen={(secid) => openDetail(secid, "watch")}
             onRemove={(secid) => setWatchlist((current) => current.filter((item) => item.secid !== secid))}
@@ -203,11 +226,15 @@ export default function StockApp() {
 
 function WatchPage({
   summaries,
+  view,
+  onViewChange,
   onSearch,
   onOpen,
   onRemove
 }: {
   summaries: Summary[];
+  view: WatchView;
+  onViewChange: (view: WatchView) => void;
   onSearch: () => void;
   onOpen: (secid: string) => void;
   onRemove: (secid: string) => void;
@@ -219,15 +246,33 @@ function WatchPage({
           <h1>自选</h1>
           <p>实时行情与关键技术指标</p>
         </div>
-        <button className="iconButton" onClick={onSearch} aria-label="搜索添加">
-          <Plus size={20} />
-        </button>
+        <div className="watchHeaderActions">
+          <div className="viewSwitch" aria-label="自选展示方式">
+            <button className={view === "card" ? "active" : ""} onClick={() => onViewChange("card")} aria-label="卡片形式">
+              <LayoutGrid size={16} />卡片
+            </button>
+            <button className={view === "list" ? "active" : ""} onClick={() => onViewChange("list")} aria-label="列表形式">
+              <List size={16} />列表
+            </button>
+          </div>
+          <button className="iconButton" onClick={onSearch} aria-label="搜索添加">
+            <Plus size={20} />
+          </button>
+        </div>
       </header>
-      <div className="cardList">
-        {summaries.map((item) => (
-          <WatchCard key={item.secid} item={item} onOpen={() => onOpen(item.secid)} onRemove={() => onRemove(item.secid)} />
-        ))}
-      </div>
+      {view === "card" ? (
+        <div className="cardList">
+          {summaries.map((item) => (
+            <WatchCard key={item.secid} item={item} onOpen={() => onOpen(item.secid)} onRemove={() => onRemove(item.secid)} />
+          ))}
+        </div>
+      ) : (
+        <div className="watchList">
+          {summaries.map((item) => (
+            <WatchListRow key={item.secid} item={item} onOpen={() => onOpen(item.secid)} onRemove={() => onRemove(item.secid)} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -261,6 +306,43 @@ function WatchCard({ item, onOpen, onRemove }: { item: Summary; onOpen: () => vo
       <div className="actionRow">
         <button onClick={onOpen}><Eye size={16} />查看详情</button>
         <button onClick={onRemove} className="mutedButton"><Trash2 size={16} />删除自选</button>
+      </div>
+    </article>
+  );
+}
+
+function WatchListRow({ item, onOpen, onRemove }: { item: Summary; onOpen: () => void; onRemove: () => void }) {
+  const detail = item.detail;
+  const quote = detail?.quote;
+  const latest = detail?.latest;
+  const color = colorByChange(quote?.pct ?? 0);
+
+  return (
+    <article className="watchListRow">
+      <div className="listIdentity">
+        <h2>{quote?.name ?? item.name}</h2>
+        <p>{quote?.code ?? item.code}</p>
+      </div>
+      <div className="listPrice">
+        <strong>{quote ? formatPrice(quote.price) : "--"}</strong>
+        <span style={{ color }}>{quote ? `${formatSigned(quote.pct)}%` : "--"}</span>
+      </div>
+      <div className="listMetric">
+        <span>MA5</span>
+        <strong>{latest ? latest.MA5.toFixed(3) : "--"}</strong>
+      </div>
+      <div className="listMetric">
+        <span>MA10</span>
+        <strong>{latest ? latest.MA10.toFixed(3) : "--"}</strong>
+      </div>
+      <div className="listMetric">
+        <span>J</span>
+        <strong style={{ color: "var(--magenta)" }}>{latest ? latest.J.toFixed(2) : "--"}</strong>
+      </div>
+      {item.error ? <p className="errorText">{item.error}</p> : null}
+      <div className="listActions">
+        <button onClick={onOpen} aria-label="查看详情"><Eye size={16} /></button>
+        <button onClick={onRemove} aria-label="删除自选"><Trash2 size={16} /></button>
       </div>
     </article>
   );

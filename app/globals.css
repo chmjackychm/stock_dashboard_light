@@ -20,7 +20,10 @@ html,
 body {
   min-height: 100%;
   margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at top left, rgba(47, 124, 255, 0.12), transparent 32%),
+    radial-gradient(circle at 85% 12%, rgba(201, 78, 155, 0.1), transparent 28%),
+    var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue",
     "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -77,7 +80,9 @@ button:disabled {
 .iconButton,
 .detailBar button,
 .actionRow button,
-.resultActions button {
+.resultActions button,
+.viewSwitch button,
+.listActions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -92,13 +97,49 @@ button:disabled {
   font-weight: 750;
 }
 
+.watchHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viewSwitch {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow);
+}
+
+.viewSwitch button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.viewSwitch button.active {
+  background: white;
+  color: var(--blue);
+  box-shadow: 0 6px 18px rgba(35, 43, 60, 0.08);
+}
+
 .cardList,
-.resultList {
+.resultList,
+.watchList {
   display: grid;
   gap: 10px;
 }
 
 .stockCard,
+.watchListRow,
 .searchResult,
 .quoteCard,
 .analysisCard,
@@ -112,6 +153,73 @@ button:disabled {
 
 .stockCard {
   padding: 14px;
+}
+
+.watchListRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 13px;
+}
+
+.listIdentity {
+  min-width: 0;
+}
+
+.listIdentity h2 {
+  overflow: hidden;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listIdentity p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.listPrice {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.listPrice strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.listPrice span {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.listMetric {
+  display: none;
+}
+
+.listActions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.listActions button {
+  min-height: 34px;
+  box-shadow: none;
+}
+
+.listActions button:last-child {
+  color: #697386;
 }
 
 .stockTop {
@@ -329,6 +437,123 @@ button:disabled {
   text-align: center;
 }
 
+.signalCard {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #edf1f6;
+  border-left: 4px solid var(--muted);
+  border-radius: 18px;
+  background: #f8fafc;
+}
+
+.signalCard.bullish {
+  border-left-color: var(--red);
+}
+
+.signalCard.neutral {
+  border-left-color: var(--yellow);
+}
+
+.signalCard.bearish {
+  border-left-color: var(--green);
+}
+
+.signalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.signalHeader span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 780;
+}
+
+.signalHeader strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 15px;
+  line-height: 1.15;
+}
+
+.signalHeader b {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.signalCard.bullish .signalHeader b {
+  color: var(--red);
+}
+
+.signalCard.bearish .signalHeader b {
+  color: var(--green);
+}
+
+.signalAction {
+  margin: 8px 0 0;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.35;
+}
+
+.signalStateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.signalState {
+  padding: 8px;
+  border-radius: 12px;
+  background: white;
+}
+
+.signalState span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.signalState strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.signalState p {
+  margin: 6px 0 0;
+  color: #5f6877;
+  font-size: 11px;
+  line-height: 1.42;
+}
+
+.signalNotes {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.signalNotes p {
+  margin: 0;
+  color: #697386;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.signalCard small {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
 .sectionTitle {
   display: flex;
   align-items: center;
@@ -340,6 +565,40 @@ button:disabled {
   color: var(--muted);
   font-size: 12px;
   font-weight: 680;
+}
+
+.kdjLegend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 780;
+}
+
+.kdjLegend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+}
+
+.kdjLegend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.kLegend {
+  background: #2563eb;
+}
+
+.dLegend {
+  background: #f59e0b;
+}
+
+.jLegend {
+  background: #db2777;
 }
 
 .chartSvg {
@@ -400,6 +659,65 @@ button:disabled {
 .axisText {
   fill: var(--muted);
   font-size: 11px;
+}
+
+.hoverGuide {
+  stroke: rgba(17, 24, 39, 0.32);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.hoverDot {
+  fill: var(--text);
+  stroke: white;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.kDot {
+  fill: #2563eb;
+}
+
+.dDot {
+  fill: #f59e0b;
+}
+
+.jDot {
+  fill: #db2777;
+}
+
+.hoverTarget {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+.chartTooltipObject {
+  pointer-events: none;
+}
+
+.chartTooltip {
+  display: grid;
+  gap: 3px;
+  height: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(232, 237, 244, 0.92);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 24px rgba(35, 43, 60, 0.16);
+  color: var(--text);
+  font-size: 10px;
+  line-height: 1.15;
+  backdrop-filter: blur(14px);
+}
+
+.chartTooltip strong {
+  font-size: 11px;
+}
+
+.chartTooltip span {
+  color: #4b5563;
+  white-space: nowrap;
 }
 
 .settingGroup {
@@ -476,4 +794,369 @@ button:disabled {
 @keyframes shimmer {
   from { background-position: 220% 0; }
   to { background-position: -220% 0; }
+}
+
+@media (min-width: 900px) {
+  .phoneShell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+    width: min(100%, 1240px);
+    min-height: 100vh;
+    padding: 24px;
+    background: transparent;
+  }
+
+  .content {
+    grid-column: 2;
+    min-width: 0;
+    padding: 0 0 28px;
+  }
+
+  .pageHeader {
+    padding: 8px 2px 18px;
+  }
+
+  .pageHeader h1 {
+    font-size: 34px;
+  }
+
+  .pageHeader p,
+  .finePrint {
+    font-size: 13px;
+  }
+
+  .cardList {
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 14px;
+  }
+
+  .watchList {
+    gap: 10px;
+  }
+
+  .resultList {
+    gap: 12px;
+  }
+
+  .stockCard,
+  .watchListRow,
+  .quoteCard,
+  .analysisCard,
+  .chartCard,
+  .settingGroup {
+    border-radius: 26px;
+  }
+
+  .stockCard {
+    padding: 18px;
+  }
+
+  .watchHeaderActions {
+    gap: 10px;
+  }
+
+  .viewSwitch button {
+    min-width: 72px;
+  }
+
+  .watchListRow {
+    grid-template-columns: minmax(180px, 1.5fr) minmax(110px, 0.7fr) repeat(3, minmax(84px, 0.55fr)) 88px;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 22px;
+  }
+
+  .listIdentity h2 {
+    font-size: 17px;
+  }
+
+  .listPrice {
+    text-align: left;
+  }
+
+  .listPrice strong {
+    font-size: 20px;
+  }
+
+  .listMetric {
+    display: block;
+    padding: 9px 10px;
+    border-radius: 14px;
+    background: #f8fafc;
+  }
+
+  .listMetric span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 760;
+  }
+
+  .listMetric strong {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .listActions {
+    grid-column: auto;
+    grid-template-columns: repeat(2, 40px);
+    justify-content: end;
+  }
+
+  .stockTop h2,
+  .searchResult h2 {
+    font-size: 18px;
+  }
+
+  .rightQuote strong {
+    font-size: 22px;
+  }
+
+  .metricPill {
+    min-height: 66px;
+  }
+
+  .detailBar {
+    grid-template-columns: 150px 150px 48px;
+    justify-content: start;
+    margin-bottom: 10px;
+  }
+
+  .detailDashboard {
+    display: grid;
+    grid-template-columns: minmax(330px, 0.46fr) minmax(420px, 0.54fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .detailSummaryColumn,
+  .detailAnalysisColumn {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .detailSummaryColumn {
+    align-content: start;
+  }
+
+  .detailAnalysisColumn {
+    align-content: start;
+  }
+
+  .quoteCard {
+    padding: 18px 20px;
+  }
+
+  .quoteCard h1 {
+    font-size: 22px;
+  }
+
+  .quoteCard strong {
+    margin-top: 8px;
+    font-size: 42px;
+  }
+
+  .quoteCard span {
+    margin-top: 6px;
+    font-size: 18px;
+  }
+
+  .quoteCard small {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+
+  .sixGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 0;
+  }
+
+  .sixGrid .metricPill,
+  .analysisGrid .metricPill {
+    min-height: 54px;
+    padding: 8px 6px;
+  }
+
+  .sixGrid .metricPill strong,
+  .analysisGrid .metricPill strong {
+    margin-top: 7px;
+    font-size: 14px;
+  }
+
+  .analysisGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 9px;
+  }
+
+  .detailAnalysisColumn .analysisCard {
+    margin-top: 0;
+    padding: 16px;
+  }
+
+  .analysisCard h2 {
+    font-size: 20px;
+  }
+
+  .sectionTitle h2 {
+    font-size: 15px;
+  }
+
+  .analysisSub {
+    margin-top: 5px;
+    font-size: 11px;
+  }
+
+  .signalCard {
+    margin-top: 12px;
+    padding: 14px;
+  }
+
+  .signalHeader strong {
+    font-size: 22px;
+  }
+
+  .signalHeader b {
+    font-size: 24px;
+  }
+
+  .signalAction {
+    font-size: 15px;
+  }
+
+  .signalStateGrid {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .signalState {
+    padding: 11px;
+  }
+
+  .signalState strong {
+    font-size: 15px;
+  }
+
+  .signalState p {
+    font-size: 12px;
+    line-height: 1.42;
+  }
+
+  .signalNotes {
+    gap: 5px;
+    margin-top: 12px;
+  }
+
+  .signalNotes p {
+    font-size: 13px;
+  }
+
+  .chartCard {
+    margin-top: 0;
+    padding: 12px 14px;
+    overflow: hidden;
+  }
+
+  .compactChartCard:first-of-type .chartSvg {
+    max-height: 205px;
+  }
+
+  .compactChartCard:last-of-type .chartSvg {
+    max-height: 170px;
+  }
+
+  .compactChartCard .chartSvg {
+    height: auto;
+  }
+
+  .searchBox {
+    min-height: 54px;
+    max-width: 680px;
+    margin-bottom: 16px;
+  }
+
+  .searchResult {
+    padding: 16px 18px;
+  }
+
+  .bottomNav {
+    position: sticky;
+    top: 24px;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .bottomNav button {
+    grid-template-columns: 24px 1fr;
+    align-items: center;
+    justify-items: start;
+    gap: 10px;
+    min-height: 54px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .toast {
+    max-width: 680px;
+  }
+}
+
+@media (min-width: 900px) and (max-height: 760px) {
+  .phoneShell {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
+  .bottomNav {
+    top: 16px;
+  }
+
+  .detailBar {
+    margin-bottom: 8px;
+  }
+
+  .quoteCard {
+    padding: 15px 18px;
+  }
+
+  .quoteCard strong {
+    font-size: 36px;
+  }
+
+  .metricPill {
+    min-height: 50px;
+  }
+
+  .chartCard {
+    padding: 10px 12px;
+  }
+
+  .detailChartColumn .chartCard:first-child .chartSvg {
+    max-height: 225px;
+  }
+
+  .detailChartColumn .chartCard:last-child .chartSvg {
+    max-height: 185px;
+  }
+
+  .finePrint {
+    margin-top: 8px;
+  }
 }
