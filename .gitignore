@@ -2,6 +2,7 @@
 node_modules
 out
 .vercel
+.gh-auth
 .env*.local
 npm-debug.log*
 yarn-debug.log*
